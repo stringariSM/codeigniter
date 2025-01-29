@@ -250,17 +250,13 @@ class CI_User_agent {
 	 *
 	 * @return	bool
 	 */
-	protected function _compile_data()
+	protected function _compile_data(): void
 	{
-		$this->_set_platform();
-
-		foreach (array('_set_robot', '_set_browser', '_set_mobile') as $function)
-		{
-			if ($this->$function() === TRUE)
-			{
-				break;
-			}
-		}
+	    $this->_set_platform();
+	
+	    array_map(fn($func) => $this->$func() === true && $func !== '_set_mobile' ? throw new \Exception('Stop Loop') : null, 
+	        ['_set_mobile', '_set_robot', '_set_browser']
+	    );
 	}
 
 	// --------------------------------------------------------------------
